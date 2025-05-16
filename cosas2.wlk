@@ -1,12 +1,16 @@
 object knightRider {
     method peso() = 500
     method peligrosidad() = 10  
+    method bulto() = 1 
+    method consecuenciaDeCarga() {} 
 }
 object bumbleblee {
     var estado = auto
     method peso() = 800 
     method peligrosidad() = estado.peligrosidad() 
     method transformase() {estado = estado.nuevoEstado()}
+    method bulto() = 1
+    method consecuenciaDeCarga() {estado = robot}
 }
 object auto {
     method peligosidad() = 15 
@@ -17,15 +21,17 @@ object robot {
     method nuevoEstado() = auto 
 }
 object ladrillos {
-    var property cantidad = 0 //property hace los metodos de setter y getter, se hace publico
+    var property cantidad = 0  
     method peligrosidad() = 2
     method peso() = cantidad * 2 
-  //  method cantidad(unValor) {cantidad = unValor} esto lo hace el property  
-  //  method cantidad() = cantidad esto lo hace el property
-}
+    method bulto() = if (cantidad <= 100) 1 else if (cantidad.between(101,300)) 2 else 3 
+    method consecuenciaDeCarga() {cantidad += 12}
+}  
 object arena {
     var property peso = 0
     method peligrosidad() = 1  
+    method bulto() = 1
+    method consecuenciaDeCarga() {peso = (peso-10).max(0)} 
 }
 object bateriaAntiaerea {
     var tieneMisiles = false
@@ -33,6 +39,8 @@ object bateriaAntiaerea {
     method peso() = if(tieneMisiles) 300 else 200
     method cargarMisiles(){tieneMisiles = true}
     method descargarMisiles(){tieneMisiles = false}   
+    method bulto() = if (tieneMisiles) 2 else 1 
+    method consecuenciaDeCarga() {self.cargarMisiles()}
 }
 object contenedor {
     const contenido = []
@@ -43,16 +51,18 @@ object contenedor {
     method quitarCosa(unaCosa) {contenido.remove(unaCosa)}
     method agregarListaDeCosas(unaLista){contenido.addAll(unaLista)}
     method vaciarContenedor(){contenido.clear()}
+    method bulto() = contenido.sum({c => c.bulto()}) 
+    method consecuenciaDeCarga() {contenido.forEach({e => e.consecuenciaDeCarga()}) }
 }
 object residuosRadiactvos {
     var property peso = 0
     method peligrosidad() = 200  
+    method consecuenciaDeCarga() {peso += 15 }
 }
 object embalajeDeSeguridad {
     var property cosaEnvuelta = arena
     method envolver(unaCosa) {cosaEnvuelta = unaCosa}
     method peso() = cosaEnvuelta.peso()
     method peligrosidad() = cosaEnvuelta.peligosidad()*0.5 
-
-  
+    method consecuenciaDeCarga() {}  
 }
